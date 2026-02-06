@@ -4,8 +4,8 @@
 
 ## 🚀 Prerequisites
 
-- Java 17+
-- Spring Boot 3.1+
+- Java 21+
+- Spring Boot 3.5+
 - Maven or Gradle
 
 ## 📦 Installation
