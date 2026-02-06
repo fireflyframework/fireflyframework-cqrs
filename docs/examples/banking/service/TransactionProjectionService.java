@@ -1,11 +1,11 @@
-package com.firefly.examples.banking.service;
+package org.fireflyframework.examples.banking.service;
 
-import com.firefly.common.cache.CacheManager;
-import com.firefly.examples.banking.dto.TransactionHistory;
-import com.firefly.examples.banking.dto.TransactionSummary;
-import com.firefly.examples.banking.dto.TransactionType;
-import com.firefly.examples.banking.entity.TransactionProjection;
-import com.firefly.examples.banking.repository.TransactionProjectionRepository;
+import org.fireflyframework.cache.CacheManager;
+import org.fireflyframework.examples.banking.dto.TransactionHistory;
+import org.fireflyframework.examples.banking.dto.TransactionSummary;
+import org.fireflyframework.examples.banking.dto.TransactionType;
+import org.fireflyframework.examples.banking.entity.TransactionProjection;
+import org.fireflyframework.examples.banking.repository.TransactionProjectionRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;

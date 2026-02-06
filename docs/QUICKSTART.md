@@ -1,6 +1,6 @@
 # Quick Start Guide
 
-**Get up and running with lib-common-cqrs in 5 minutes**
+**Get up and running with fireflyframework-cqrs in 5 minutes**
 
 ## 🚀 Prerequisites
 
@@ -14,8 +14,8 @@
 
 ```xml
 <dependency>
-    <groupId>com.firefly</groupId>
-    <artifactId>lib-common-cqrs</artifactId>
+    <groupId>org.fireflyframework</groupId>
+    <artifactId>fireflyframework-cqrs</artifactId>
     <version>1.0.0-SNAPSHOT</version>
 </dependency>
 ```
@@ -23,7 +23,7 @@
 ### Gradle
 
 ```groovy
-implementation 'com.firefly:lib-common-cqrs:1.0.0-SNAPSHOT'
+implementation 'org.fireflyframework:fireflyframework-cqrs:1.0.0-SNAPSHOT'
 ```
 
 ## ⚙️ Basic Configuration
@@ -65,8 +65,8 @@ public class MyApplication {
 ```java
 package com.example.commands;
 
-import com.firefly.common.cqrs.command.Command;
-import com.firefly.common.cqrs.validation.ValidationResult;
+import org.fireflyframework.cqrs.command.Command;
+import org.fireflyframework.cqrs.validation.ValidationResult;
 import reactor.core.publisher.Mono;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Email;
@@ -111,8 +111,8 @@ public class CreateAccountCommand implements Command<AccountResult> {
 ```java
 package com.example.handlers;
 
-import com.firefly.common.cqrs.annotations.CommandHandlerComponent;
-import com.firefly.common.cqrs.command.CommandHandler;
+import org.fireflyframework.cqrs.annotations.CommandHandlerComponent;
+import org.fireflyframework.cqrs.command.CommandHandler;
 import com.example.commands.CreateAccountCommand;
 import com.example.results.AccountResult;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -159,7 +159,7 @@ public class CreateAccountHandler extends CommandHandler<CreateAccountCommand, A
 ```java
 package com.example.queries;
 
-import com.firefly.common.cqrs.query.Query;
+import org.fireflyframework.cqrs.query.Query;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
@@ -174,7 +174,7 @@ public class GetAccountBalanceQuery implements Query<AccountBalance> {
     public String getCacheKey() {
         // Note: The framework will automatically prefix this with ":cqrs:"
         // Final key will be "firefly:cache:default::cqrs:account_balance:..." after
-        // lib-common-cache adds its "firefly:cache:{cacheName}:" prefix
+        // fireflyframework-cache adds its "firefly:cache:{cacheName}:" prefix
         return "account_balance:" + accountId;
     }
     
@@ -190,8 +190,8 @@ public class GetAccountBalanceQuery implements Query<AccountBalance> {
 ```java
 package com.example.handlers;
 
-import com.firefly.common.cqrs.annotations.QueryHandlerComponent;
-import com.firefly.common.cqrs.query.QueryHandler;
+import org.fireflyframework.cqrs.annotations.QueryHandlerComponent;
+import org.fireflyframework.cqrs.query.QueryHandler;
 import com.example.queries.GetAccountBalanceQuery;
 import com.example.results.AccountBalance;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -232,9 +232,9 @@ public class GetAccountBalanceHandler extends QueryHandler<GetAccountBalanceQuer
 ```java
 package com.example.controllers;
 
-import com.firefly.common.cqrs.command.CommandBus;
-import com.firefly.common.cqrs.query.QueryBus;
-import com.firefly.common.cqrs.context.ExecutionContext;
+import org.fireflyframework.cqrs.command.CommandBus;
+import org.fireflyframework.cqrs.query.QueryBus;
+import org.fireflyframework.cqrs.context.ExecutionContext;
 import com.example.commands.CreateAccountCommand;
 import com.example.queries.GetAccountBalanceQuery;
 import org.springframework.beans.factory.annotation.Autowired;

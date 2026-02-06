@@ -1,6 +1,6 @@
-package com.firefly.examples.banking.service;
+package org.fireflyframework.examples.banking.service;
 
-import com.firefly.common.cqrs.execution.ExecutionContext;
+import org.fireflyframework.cqrs.execution.ExecutionContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.server.reactive.ServerHttpRequest;

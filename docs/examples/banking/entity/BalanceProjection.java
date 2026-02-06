@@ -1,6 +1,6 @@
-package com.firefly.examples.banking.entity;
+package org.fireflyframework.examples.banking.entity;
 
-import com.firefly.examples.banking.dto.AccountStatus;
+import org.fireflyframework.examples.banking.dto.AccountStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

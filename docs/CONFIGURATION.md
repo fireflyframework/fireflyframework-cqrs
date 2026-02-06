@@ -1,6 +1,6 @@
 # Configuration Reference
 
-**Complete configuration guide for lib-common-cqrs**
+**Complete configuration guide for fireflyframework-cqrs**
 
 ## 📋 Quick Reference
 
@@ -421,10 +421,10 @@ Health check includes:
 
 ## 🔗 Integration Configuration
 
-### With lib-common-domain
+### With fireflyframework-domain
 
 ```yaml
-# lib-common-domain configuration (for domain events, service clients)
+# fireflyframework-domain configuration (for domain events, service clients)
 firefly:
   domain:
     events:
@@ -533,7 +533,7 @@ firefly:
 # Enable debug logging
 logging:
   level:
-    com.firefly.common.cqrs: DEBUG
+    org.fireflyframework.cqrs: DEBUG
     root: INFO
 
 # Extended timeouts for debugging

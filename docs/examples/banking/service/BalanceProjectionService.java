@@ -1,10 +1,10 @@
-package com.firefly.examples.banking.service;
+package org.fireflyframework.examples.banking.service;
 
-import com.firefly.common.cache.CacheManager;
-import com.firefly.examples.banking.dto.AccountBalance;
-import com.firefly.examples.banking.dto.AccountStatus;
-import com.firefly.examples.banking.entity.BalanceProjection;
-import com.firefly.examples.banking.repository.BalanceProjectionRepository;
+import org.fireflyframework.cache.CacheManager;
+import org.fireflyframework.examples.banking.dto.AccountBalance;
+import org.fireflyframework.examples.banking.dto.AccountStatus;
+import org.fireflyframework.examples.banking.entity.BalanceProjection;
+import org.fireflyframework.examples.banking.repository.BalanceProjectionRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

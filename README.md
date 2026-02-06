@@ -21,7 +21,7 @@ Building scalable, maintainable applications with clear separation between **com
 - **⚡ Reactive-First**: Built on Project Reactor for high-performance async processing
 - **🛡️ Enterprise Security**: Custom authorization logic with context-aware access control
 - **📊 Production-Ready Observability**: Built-in metrics, health checks, and actuator endpoints
-- **🎛️ Intelligent Caching**: Automatic cache key generation via lib-common-cache (Redis/Caffeine support)
+- **🎛️ Intelligent Caching**: Automatic cache key generation via fireflyframework-cache (Redis/Caffeine support)
 - **🔧 Auto-Configuration**: Spring Boot auto-configuration with sensible defaults
 
 ### 🏆 **What Makes It Different**
@@ -30,7 +30,7 @@ Building scalable, maintainable applications with clear separation between **com
 |---------|------------------|---------------|
 | Handler Setup | Manual registration, boilerplate | Annotation-based, automatic discovery |
 | Validation | Manual setup | Jakarta Bean Validation + custom async validation |
-| Caching | Manual cache management | Automatic cache key generation via lib-common-cache |
+| Caching | Manual cache management | Automatic cache key generation via fireflyframework-cache |
 | Metrics | Custom metrics implementation | Built-in Micrometer integration with actuator endpoints |
 | Authorization | Custom authorization logic | Custom business authorization with context-aware access control |
 | Type Safety | Runtime type resolution errors | Compile-time generic type safety |
@@ -42,15 +42,15 @@ Building scalable, maintainable applications with clear separation between **com
 
 ```xml
 <dependency>
-    <groupId>com.firefly</groupId>
-    <artifactId>lib-common-cqrs</artifactId>
+    <groupId>org.fireflyframework</groupId>
+    <artifactId>fireflyframework-cqrs</artifactId>
     <version>1.0.0-SNAPSHOT</version>
 </dependency>
 
-<!-- Optional: Enable caching support via lib-common-cache -->
+<!-- Optional: Enable caching support via fireflyframework-cache -->
 <dependency>
-    <groupId>com.firefly</groupId>
-    <artifactId>lib-common-cache</artifactId>
+    <groupId>org.fireflyframework</groupId>
+    <artifactId>fireflyframework-cache</artifactId>
     <version>1.0.0-SNAPSHOT</version>
 </dependency>
 ```
@@ -175,12 +175,12 @@ public class GetAccountBalanceHandler extends QueryHandler<GetAccountBalanceQuer
                 .build());
     }
 
-    // ✅ INTELLIGENT CACHING - All managed automatically via lib-common-cache:
+    // ✅ INTELLIGENT CACHING - All managed automatically via fireflyframework-cache:
     // • Cache key: "account_balance_ACC123_USD" (auto-generated)
     // • TTL management with configurable expiration
     // • Cache hit/miss metrics (cache.gets with result tags)
     // • Automatic eviction when TransferMoneyCommand executes
-    // • Redis/Caffeine support via lib-common-cache configuration
+    // • Redis/Caffeine support via fireflyframework-cache configuration
     // • Cache metrics in actuator endpoint /actuator/cqrs/queries
 }
 ```
@@ -220,7 +220,7 @@ public class GetAccountBalanceHandler extends QueryHandler<GetAccountBalanceQuer
 - **🌊 Reactive Streams**: Built on Project Reactor for non-blocking, high-throughput processing
 - **⏱️ Timeout Management**: Per-handler configurable timeouts with circuit breaker integration
 - **🔄 Intelligent Retry Logic**: Exponential backoff with jitter for failure recovery
-- **🎛️ Multi-Level Caching via lib-common-cache**:
+- **🎛️ Multi-Level Caching via fireflyframework-cache**:
   - Local caching (Caffeine) for low-latency access
   - Distributed caching (Redis) for cluster-wide consistency
   - Automatic cache key generation with field-based customization
@@ -302,7 +302,7 @@ public class GetTransactionHistoryQuery implements Query<TransactionHistory> {
         // Custom cache key for better cache utilization
         // Note: The framework will automatically prefix this with ":cqrs:"
         // Final key will be "firefly:cache:default::cqrs:txn_history:..." after
-        // lib-common-cache adds its "firefly:cache:{cacheName}:" prefix
+        // fireflyframework-cache adds its "firefly:cache:{cacheName}:" prefix
         return String.format("txn_history:%s:%s:%s:%d",
             accountId, fromDate, toDate, limit);
     }
@@ -500,9 +500,9 @@ FIREFLY_CQRS_AUTHORIZATION_ENABLED=true
 FIREFLY_CQRS_AUTHORIZATION_CUSTOM_ENABLED=true
 ```
 
-### Cache Configuration via lib-common-cache
+### Cache Configuration via fireflyframework-cache
 
-The CQRS library uses **lib-common-cache** for unified cache management across all Firefly libraries. This provides:
+The CQRS library uses **fireflyframework-cache** for unified cache management across all Firefly libraries. This provides:
 
 - ✅ **Unified cache abstraction** - Single cache configuration for all Firefly libraries
 - ✅ **Better cache providers** - Support for Caffeine (local) and Redis (distributed)
@@ -513,7 +513,7 @@ The CQRS library uses **lib-common-cache** for unified cache management across a
 #### Basic Configuration
 
 ```yaml
-# Enable caching via lib-common-cache
+# Enable caching via fireflyframework-cache
 firefly:
   cache:
     enabled: true
@@ -525,7 +525,7 @@ firefly:
       caching-enabled: true    # Enable query caching
 
 # Note: All CQRS cache keys are automatically prefixed with ":cqrs:"
-# Combined with lib-common-cache's "firefly:cache:{cacheName}:" prefix, final keys are:
+# Combined with fireflyframework-cache's "firefly:cache:{cacheName}:" prefix, final keys are:
 #   - Caffeine: "firefly:cache:default::cqrs:QueryName"
 #   - Redis: "firefly:cache:default::cqrs:QueryName"
 # The double colon (::) provides clear visual separation between cache infrastructure and CQRS namespace
@@ -586,7 +586,7 @@ firefly:
       caching-enabled: true
 
 # Note: CQRS uses namespace prefixing (:cqrs:) for all query cache keys
-# Combined with lib-common-cache's "firefly:cache:{cacheName}:" prefix, final keys are:
+# Combined with fireflyframework-cache's "firefly:cache:{cacheName}:" prefix, final keys are:
 #   - Caffeine: "firefly:cache:default::cqrs:QueryName"
 #   - Redis: "firefly:cache:default::cqrs:QueryName"
 # The double colon (::) provides clear visual separation
@@ -594,7 +594,7 @@ firefly:
 
 #### Migration from Old Cache Configuration
 
-If you're upgrading from an older version of lib-common-cqrs:
+If you're upgrading from an older version of fireflyframework-cqrs:
 
 **Old Configuration (Deprecated):**
 ```yaml
@@ -616,14 +616,14 @@ spring:
 firefly:
   cache:
     enabled: true
-    provider: redis            # ✅ Use lib-common-cache
+    provider: redis            # ✅ Use fireflyframework-cache
     redis:
       host: localhost
       port: 6379
 ```
 
 **Migration Steps:**
-1. Add `lib-common-cache` dependency to your `pom.xml`
+1. Add `fireflyframework-cache` dependency to your `pom.xml`
 2. Remove old `firefly.cqrs.query.cache-type` property
 3. Remove `spring.cache.*` configuration
 4. Add `firefly.cache.*` configuration as shown above
@@ -898,20 +898,20 @@ class TransferMoneyHandlerTest {
 }
 ```
 
-## 🔄 Integration with lib-common-domain
+## 🔄 Integration with fireflyframework-domain
 
-This library integrates seamlessly with lib-common-domain for complete DDD support:
+This library integrates seamlessly with fireflyframework-domain for complete DDD support:
 
 ```xml
 <dependency>
-    <groupId>com.firefly</groupId>
-    <artifactId>lib-common-domain</artifactId>
+    <groupId>org.fireflyframework</groupId>
+    <artifactId>fireflyframework-domain</artifactId>
     <version>2.0.0-SNAPSHOT</version>
-    <!-- lib-common-cqrs is included transitively -->
+    <!-- fireflyframework-cqrs is included transitively -->
 </dependency>
 ```
 
-**What you get from lib-common-domain:**
+**What you get from fireflyframework-domain:**
 - Domain Events: Multi-messaging event publishing (Kafka, RabbitMQ, SQS, Kinesis)
 - ServiceClient Framework: Reactive REST and gRPC service communication
 - Resilience Patterns: Circuit breakers, retries, and fault tolerance
@@ -919,9 +919,9 @@ This library integrates seamlessly with lib-common-domain for complete DDD suppo
 - ExecutionContext: Context propagation across distributed services
 - Observability: Metrics, health checks, and distributed tracing
 
-## 🏦 **Real-World Example - Banking Application**
+## 🏦 **Real-World Example - Enterprise Application**
 
-See how Firefly CQRS eliminates complexity in a production banking application:
+See how Firefly CQRS eliminates complexity in a production application:
 
 ### 💳 **Command: Transfer Money Between Accounts**
 
@@ -1036,11 +1036,11 @@ public class GetAccountBalanceHandler extends QueryHandler<GetAccountBalanceQuer
                 .build());
     }
     
-    // ✅ INTELLIGENT CACHING via lib-common-cache:
+    // ✅ INTELLIGENT CACHING via fireflyframework-cache:
     // - Cache key: "account_balance_ACC123456_USD"
     // - Automatic eviction when TransferMoneyCommand affects this account
     // - Cache hit/miss metrics automatically collected
-    // - Redis/Caffeine support via lib-common-cache configuration
+    // - Redis/Caffeine support via fireflyframework-cache configuration
 }
 ```
 
@@ -1142,7 +1142,7 @@ For comprehensive documentation and examples, see our **[Documentation Hub](./do
 - **[📝 Developer Guide](./docs/DEVELOPER_GUIDE.md)** - Comprehensive development patterns with production observability
 
 ### 📦 **What's Included**
-- **✅ Real Implementation Examples** - Code from the actual lib-common-cqrs codebase
+- **✅ Real Implementation Examples** - Code from the actual fireflyframework-cqrs codebase
 - **✅ Production Monitoring** - Complete CommandMetricsService integration and actuator endpoints
 - **✅ Enterprise Security** - Custom authorization patterns with context-aware access control
 - **✅ Performance Optimization** - Intelligent caching strategies and reactive patterns
@@ -1185,8 +1185,8 @@ GET /actuator/cqrs/health
 ### **1️⃣ Add the Dependency**
 ```xml
 <dependency>
-    <groupId>com.firefly</groupId>
-    <artifactId>lib-common-cqrs</artifactId>
+    <groupId>org.fireflyframework</groupId>
+    <artifactId>fireflyframework-cqrs</artifactId>
     <version>1.0.0-SNAPSHOT</version>
 </dependency>
 ```
@@ -1243,7 +1243,7 @@ curl http://localhost:8080/actuator/cqrs
 
 ## 📜 **License**
 
-**Copyright 2025 Firefly Software Solutions Inc**
+**Copyright 2024-2026 Firefly Software Solutions Inc**
 
 Licensed under the Apache License, Version 2.0 (the "License").
 You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0

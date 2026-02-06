@@ -1,4 +1,4 @@
-# lib-common-cqrs Documentation
+# fireflyframework-cqrs Documentation
 
 **Enterprise-grade CQRS framework with reactive programming, zero-boilerplate handlers, and comprehensive observability.**
 
@@ -32,7 +32,7 @@
 
 ## 🏗️ Framework Overview
 
-lib-common-cqrs is a production-ready CQRS framework that provides:
+fireflyframework-cqrs is a production-ready CQRS framework that provides:
 
 ### ✨ Zero-Boilerplate Development
 ```java
@@ -182,7 +182,7 @@ public class TransferController {
 
 This library works seamlessly with other Firefly components:
 
-- **[lib-common-domain](../../lib-common-domain)** - Domain events, service clients, resilience
+- **[fireflyframework-domain](../../fireflyframework-domain)** - Domain events, service clients, resilience
 - **[lib-transactional-engine](../../lib-transactional-engine)** - Saga orchestration
 
 ---

@@ -1,4 +1,4 @@
-package com.firefly.examples.banking.dto;
+package org.fireflyframework.examples.banking.dto;
 
 /**
  * Status enumeration for money deposit operations.

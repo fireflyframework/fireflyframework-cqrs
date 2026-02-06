@@ -1,6 +1,6 @@
 # Developer Guide
 
-**Comprehensive development reference for building applications with lib-common-cqrs**
+**Comprehensive development reference for building applications with fireflyframework-cqrs**
 
 ## 📚 Table of Contents
 
@@ -56,10 +56,10 @@ Commands should be **immutable** and contain all data needed for the operation:
 ```java
 package com.example.banking.commands;
 
-import com.firefly.common.cqrs.command.Command;
-import com.firefly.common.cqrs.authorization.AuthorizationResult;
-import com.firefly.common.cqrs.validation.ValidationResult;
-import com.firefly.common.cqrs.context.ExecutionContext;
+import org.fireflyframework.cqrs.command.Command;
+import org.fireflyframework.cqrs.authorization.AuthorizationResult;
+import org.fireflyframework.cqrs.validation.ValidationResult;
+import org.fireflyframework.cqrs.context.ExecutionContext;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 import reactor.core.publisher.Mono;
@@ -198,9 +198,9 @@ public class TransferMoneyCommand implements Command<TransferResult> {
 ```java
 package com.example.banking.handlers;
 
-import com.firefly.common.cqrs.annotations.CommandHandlerComponent;
-import com.firefly.common.cqrs.command.CommandHandler;
-import com.firefly.common.cqrs.context.ExecutionContext;
+import org.fireflyframework.cqrs.annotations.CommandHandlerComponent;
+import org.fireflyframework.cqrs.command.CommandHandler;
+import org.fireflyframework.cqrs.context.ExecutionContext;
 import com.example.banking.commands.TransferMoneyCommand;
 import com.example.banking.results.TransferResult;
 import com.example.banking.services.AccountService;
@@ -300,9 +300,9 @@ Queries should be lightweight and focused on data retrieval:
 ```java
 package com.example.banking.queries;
 
-import com.firefly.common.cqrs.query.Query;
-import com.firefly.common.cqrs.authorization.AuthorizationResult;
-import com.firefly.common.cqrs.context.ExecutionContext;
+import org.fireflyframework.cqrs.query.Query;
+import org.fireflyframework.cqrs.authorization.AuthorizationResult;
+import org.fireflyframework.cqrs.context.ExecutionContext;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import reactor.core.publisher.Mono;
@@ -340,7 +340,7 @@ public class GetAccountTransactionsQuery implements Query<TransactionHistory> {
     public String getCacheKey() {
         // Note: The framework will automatically prefix this with ":cqrs:"
         // Final key will be "firefly:cache:default::cqrs:account_transactions:..." after
-        // lib-common-cache adds its "firefly:cache:{cacheName}:" prefix
+        // fireflyframework-cache adds its "firefly:cache:{cacheName}:" prefix
         return String.format("account_transactions:%s:%s:%s:%d:%s",
             accountId, fromDate, toDate, limit, currency != null ? currency : "ALL");
     }
@@ -405,9 +405,9 @@ public class GetAccountTransactionsQuery implements Query<TransactionHistory> {
 ```java
 package com.example.banking.handlers;
 
-import com.firefly.common.cqrs.annotations.QueryHandlerComponent;
-import com.firefly.common.cqrs.query.QueryHandler;
-import com.firefly.common.cqrs.context.ExecutionContext;
+import org.fireflyframework.cqrs.annotations.QueryHandlerComponent;
+import org.fireflyframework.cqrs.query.QueryHandler;
+import org.fireflyframework.cqrs.context.ExecutionContext;
 import com.example.banking.queries.GetAccountTransactionsQuery;
 import com.example.banking.results.TransactionHistory;
 import com.example.banking.services.TransactionService;
@@ -1304,7 +1304,7 @@ groups:
 
 This comprehensive observability setup provides full visibility into your CQRS application's performance, errors, and business metrics.
 
-This comprehensive Developer Guide provides practical patterns and real-world examples that developers can immediately apply when building applications with lib-common-cqrs. The guide focuses on actual implementation details rather than theoretical concepts.
+This comprehensive Developer Guide provides practical patterns and real-world examples that developers can immediately apply when building applications with fireflyframework-cqrs. The guide focuses on actual implementation details rather than theoretical concepts.
 
 ---
 

@@ -1,6 +1,6 @@
 # CQRS Integration with Event Sourcing Architecture
 
-**A comprehensive guide for integrating lib-common-cqrs with Event Sourcing patterns in the Firefly ecosystem**
+**A comprehensive guide for integrating fireflyframework-cqrs with Event Sourcing patterns in the Firefly ecosystem**
 
 ---
 
@@ -87,29 +87,29 @@ Event Sourcing and CQRS are complementary architectural patterns that solve diff
 ```xml
 <!-- Event Sourcing Core -->
 <dependency>
-    <groupId>com.firefly</groupId>
-    <artifactId>lib-common-eventsourcing</artifactId>
+    <groupId>org.fireflyframework</groupId>
+    <artifactId>fireflyframework-eventsourcing</artifactId>
     <version>2.0.0-SNAPSHOT</version>
 </dependency>
 
 <!-- Event-Driven Architecture (EDA) for Event Publishing -->
 <dependency>
-    <groupId>com.firefly</groupId>
-    <artifactId>lib-common-eda</artifactId>
+    <groupId>org.fireflyframework</groupId>
+    <artifactId>fireflyframework-eda</artifactId>
     <version>2.0.0-SNAPSHOT</version>
 </dependency>
 
 <!-- CQRS Framework -->
 <dependency>
-    <groupId>com.firefly</groupId>
-    <artifactId>lib-common-cqrs</artifactId>
+    <groupId>org.fireflyframework</groupId>
+    <artifactId>fireflyframework-cqrs</artifactId>
     <version>1.0.0-SNAPSHOT</version>
 </dependency>
 
 <!-- Caching Support -->
 <dependency>
-    <groupId>com.firefly</groupId>
-    <artifactId>lib-common-cache</artifactId>
+    <groupId>org.fireflyframework</groupId>
+    <artifactId>fireflyframework-cache</artifactId>
     <version>1.0.0-SNAPSHOT</version>
 </dependency>
 
@@ -223,7 +223,7 @@ spring:
 
 ```sql
 -- PostgreSQL Event Store Schema
--- This should be created by the lib-common-eventsourcing auto-configuration
+-- This should be created by the fireflyframework-eventsourcing auto-configuration
 -- or via Liquibase migrations
 
 CREATE SCHEMA IF NOT EXISTS events;
@@ -266,7 +266,7 @@ CREATE INDEX idx_snapshots_version ON events.snapshots(aggregate_id, aggregate_v
 #### Supporting Domain Classes
 
 ```java
-// Supporting domain classes for the banking example
+// Supporting domain classes for the example
 
 // Transaction Record
 public record TransactionRecord(
@@ -348,7 +348,7 @@ public record TransferCompletedIntegrationEvent(
 
 ---
 
-## 💰 Complete Banking Example
+## 💰 Complete Example
 
 ### Domain Model
 
@@ -356,8 +356,8 @@ public record TransferCompletedIntegrationEvent(
 
 ```java
 // Account aggregate using Firefly Event Sourcing
-import com.firefly.common.eventsourcing.aggregate.AggregateRoot;
-import com.firefly.common.eventsourcing.domain.Event;
+import org.fireflyframework.eventsourcing.aggregate.AggregateRoot;
+import org.fireflyframework.eventsourcing.domain.Event;
 
 @Component
 public class Account extends AggregateRoot {
@@ -504,7 +504,7 @@ public class Account extends AggregateRoot {
 ```java
 // Domain events implementing Firefly Event interface
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.firefly.common.eventsourcing.domain.Event;
+import org.fireflyframework.eventsourcing.domain.Event;
 
 // Account Created Event
 @JsonTypeName("account.created")
@@ -775,9 +775,9 @@ public class DepositMoneyCommand implements Command<DepositResult> {
 
 ```java
 // Transfer money command handler integrating with Firefly Event Sourcing
-import com.firefly.common.eventsourcing.store.EventStore;
-import com.firefly.common.eventsourcing.publisher.EventSourcingPublisher;
-import com.firefly.common.eventsourcing.aggregate.AggregateRoot;
+import org.fireflyframework.eventsourcing.store.EventStore;
+import org.fireflyframework.eventsourcing.publisher.EventSourcingPublisher;
+import org.fireflyframework.eventsourcing.aggregate.AggregateRoot;
 
 @CommandHandlerComponent(
     timeout = 30000,
@@ -1517,7 +1517,7 @@ public class BankingController {
 
 The combined CQRS + Event Sourcing architecture provides extensive observability:
 
-#### CQRS Metrics (via lib-common-cqrs)
+#### CQRS Metrics (via fireflyframework-cqrs)
 ```bash
 # Command processing metrics
 curl http://localhost:8080/actuator/cqrs/commands
@@ -1529,7 +1529,7 @@ curl http://localhost:8080/actuator/cqrs/queries
 curl http://localhost:8080/actuator/cqrs/handlers
 ```
 
-#### Event Sourcing Metrics (via lib-common-eda)
+#### Event Sourcing Metrics (via fireflyframework-eda)
 ```bash
 # Event store performance metrics
 curl http://localhost:8080/actuator/events
@@ -1681,8 +1681,8 @@ management:
 # Logging
 logging:
   level:
-    com.firefly.cqrs: INFO
-    com.firefly.events: INFO
+    org.fireflyframework.cqrs: INFO
+    org.fireflyframework.events: INFO
     com.banking: DEBUG
   pattern:
     console: "%d{HH:mm:ss.SSS} [%thread] %-5level [%X{correlationId}] %logger{36} - %msg%n"
@@ -2073,9 +2073,9 @@ public class TransactionProjectionHandler {
 ## 📚 Additional Resources
 
 - **[CQRS Framework Documentation](../README.md)** - Complete CQRS library reference
-- **[Event Sourcing Library Documentation](../../lib-common-eda/docs/)** - Event Sourcing implementation details  
-- **[Domain Events Integration](../../lib-common-domain/docs/)** - Multi-messaging event publishing
-- **[Cache Configuration Guide](../../lib-common-cache/docs/)** - Advanced caching strategies
+- **[Event Sourcing Library Documentation](../../fireflyframework-eda/docs/)** - Event Sourcing implementation details  
+- **[Domain Events Integration](../../fireflyframework-domain/docs/)** - Multi-messaging event publishing
+- **[Cache Configuration Guide](../../fireflyframework-cache/docs/)** - Advanced caching strategies
 
 ---
 

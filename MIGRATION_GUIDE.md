@@ -1,10 +1,10 @@
-# Migration Guide: lib-common-cache Integration
+# Migration Guide: fireflyframework-cache Integration
 
-This guide helps you migrate from the old internal cache implementation to the new **lib-common-cache** integration.
+This guide helps you migrate from the old internal cache implementation to the new **fireflyframework-cache** integration.
 
 ## Overview
 
-The lib-common-cqrs library now uses **lib-common-cache** for unified cache management across all Firefly libraries. This provides:
+The fireflyframework-cqrs library now uses **fireflyframework-cache** for unified cache management across all Firefly libraries. This provides:
 
 - ✅ **Unified cache abstraction** - Single cache configuration for all Firefly libraries
 - ✅ **Better cache providers** - Support for Caffeine and Redis with optimized configurations
@@ -24,8 +24,8 @@ The following internal cache components have been removed:
 
 ### New Components
 
-- `QueryCacheAdapter` - Bridge adapter between lib-common-cache and CQRS query bus
-- Integration with `FireflyCacheManager` from lib-common-cache
+- `QueryCacheAdapter` - Bridge adapter between fireflyframework-cache and CQRS query bus
+- Integration with `FireflyCacheManager` from fireflyframework-cache
 - Reactive cache operations using `Mono<T>` return types
 
 ### Configuration Changes
@@ -70,21 +70,21 @@ firefly:
 
 ## Migration Steps
 
-### Step 1: Add lib-common-cache Dependency
+### Step 1: Add fireflyframework-cache Dependency
 
-Add the lib-common-cache dependency to your `pom.xml`:
+Add the fireflyframework-cache dependency to your `pom.xml`:
 
 ```xml
 <dependency>
-    <groupId>com.firefly</groupId>
-    <artifactId>lib-common-cache</artifactId>
+    <groupId>org.fireflyframework</groupId>
+    <artifactId>fireflyframework-cache</artifactId>
     <version>1.0.0-SNAPSHOT</version>
 </dependency>
 ```
 
 ### Step 2: Update Configuration
 
-Replace your old cache configuration with the new lib-common-cache configuration:
+Replace your old cache configuration with the new fireflyframework-cache configuration:
 
 **Before:**
 ```yaml
@@ -110,7 +110,7 @@ firefly:
 
 ### Step 3: Remove Old Dependencies (Optional)
 
-If you were explicitly depending on Redis, you can remove it as lib-common-cache manages it:
+If you were explicitly depending on Redis, you can remove it as fireflyframework-cache manages it:
 
 ```xml
 <!-- REMOVE THIS if you added it manually -->
@@ -240,7 +240,7 @@ public class MyService {
 
 **Problem:** Queries are not being cached
 
-**Solution:** Ensure lib-common-cache is on the classpath and cache is enabled:
+**Solution:** Ensure fireflyframework-cache is on the classpath and cache is enabled:
 
 ```yaml
 firefly:
@@ -255,10 +255,10 @@ INFO  c.f.c.cqrs.config.CqrsAutoConfiguration  : CQRS Query Bus configured with 
 
 If you see:
 ```
-INFO  c.f.c.cqrs.config.CqrsAutoConfiguration  : CQRS Query Bus configured without cache support (lib-common-cache not available)
+INFO  c.f.c.cqrs.config.CqrsAutoConfiguration  : CQRS Query Bus configured without cache support (fireflyframework-cache not available)
 ```
 
-Then lib-common-cache is not on the classpath.
+Then fireflyframework-cache is not on the classpath.
 
 ### Redis Connection Issues
 
@@ -304,7 +304,7 @@ firefly:
 - ❌ Blocking cache operations
 - ❌ Manual cache management
 
-### After (lib-common-cache)
+### After (fireflyframework-cache)
 
 - ✅ Unified cache configuration across all Firefly libraries
 - ✅ Multiple cache providers (Caffeine, Redis) with easy switching
@@ -316,22 +316,22 @@ firefly:
 
 If you encounter issues during migration:
 
-1. Check the [lib-common-cache documentation](../lib-common-cache/README.md)
+1. Check the [fireflyframework-cache documentation](../fireflyframework-cache/README.md)
 2. Review the [CQRS configuration guide](./docs/CONFIGURATION.md)
 3. Enable debug logging:
    ```yaml
    logging:
      level:
-       com.firefly.common.cqrs: DEBUG
-       com.firefly.common.cache: DEBUG
+       org.fireflyframework.cqrs: DEBUG
+       org.fireflyframework.cache: DEBUG
    ```
 4. Open an issue with detailed logs and configuration
 
 ## Summary
 
-The migration to lib-common-cache is straightforward:
+The migration to fireflyframework-cache is straightforward:
 
-1. ✅ Add lib-common-cache dependency
+1. ✅ Add fireflyframework-cache dependency
 2. ✅ Update configuration from `spring.cache.*` to `firefly.cache.*`
 3. ✅ No code changes required
 4. ✅ Test your application

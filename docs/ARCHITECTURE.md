@@ -1,10 +1,10 @@
 # CQRS Framework Architecture
 
-**Deep dive into the architectural patterns, components, and design decisions of lib-common-cqrs**
+**Deep dive into the architectural patterns, components, and design decisions of fireflyframework-cqrs**
 
 ## 🏗️ Architectural Overview
 
-The lib-common-cqrs framework implements the Command Query Responsibility Segregation (CQRS) pattern with a focus on developer productivity, type safety, and operational excellence.
+The fireflyframework-cqrs framework implements the Command Query Responsibility Segregation (CQRS) pattern with a focus on developer productivity, type safety, and operational excellence.
 
 ### Core Design Principles
 

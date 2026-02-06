@@ -1,2 +1,2 @@
-com.firefly.common.cqrs.config.CqrsAutoConfiguration
-com.firefly.common.cqrs.config.CqrsActuatorAutoConfiguration
+org.fireflyframework.cqrs.config.CqrsAutoConfiguration
+org.fireflyframework.cqrs.config.CqrsActuatorAutoConfiguration

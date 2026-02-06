@@ -1,4 +1,4 @@
-package com.firefly.examples.banking.dto;
+package org.fireflyframework.examples.banking.dto;
 
 import lombok.Builder;
 import lombok.Data;
