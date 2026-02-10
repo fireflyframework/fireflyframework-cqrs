@@ -1,4 +1,6 @@
 # Firefly CQRS Framework Library
+    
+[![CI](https://github.com/fireflyframework/fireflyframework-cqrs/actions/workflows/ci.yml/badge.svg)](https://github.com/fireflyframework/fireflyframework-cqrs/actions/workflows/ci.yml)
 
 **Enterprise-grade CQRS implementation for Spring Boot applications**
 
