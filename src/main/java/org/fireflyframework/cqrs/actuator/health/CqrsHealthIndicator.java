@@ -69,22 +69,26 @@ public class CqrsHealthIndicator extends FireflyHealthIndicator {
             log.error("Error performing CQRS health check", e);
             builder.down()
                 .withDetail("error", "Health check failed: " + e.getMessage())
-                .withDetail("error.type", e.getClass().getSimpleName());
+                .withDetail("error_type", e.getClass().getSimpleName());
         }
     }
 
     private void performHealthCheck(Health.Builder builder) {
+        boolean healthy = true;
+
         // Check core components
         if (commandBus == null) {
-            builder.down().withDetail("command.bus", "NOT_AVAILABLE");
+            builder.withDetail("command_bus", "NOT_AVAILABLE");
+            healthy = false;
         } else {
-            builder.withDetail("command.bus", "UP");
+            builder.withDetail("command_bus", "UP");
         }
 
         if (queryBus == null) {
-            builder.down().withDetail("query.bus", "NOT_AVAILABLE");
+            builder.withDetail("query_bus", "NOT_AVAILABLE");
+            healthy = false;
         } else {
-            builder.withDetail("query.bus", "UP");
+            builder.withDetail("query_bus", "UP");
         }
 
         // Add handler registry information
@@ -97,8 +101,15 @@ public class CqrsHealthIndicator extends FireflyHealthIndicator {
         addPerformanceIndicators(builder);
 
         // Add framework information
-        builder.withDetail("framework.version", "2025-08");
+        builder.withDetail("framework_version", "2025-08");
         builder.withDetail("uptime", Duration.between(startupTime, Instant.now()).toString());
+
+        // Set final status
+        if (healthy) {
+            builder.up();
+        } else {
+            builder.down();
+        }
     }
 
     private void addHandlerRegistryDetails(Health.Builder builder) {
@@ -109,18 +120,18 @@ public class CqrsHealthIndicator extends FireflyHealthIndicator {
                 @SuppressWarnings("unchecked")
                 java.util.Map<Class<?>, Object> handlers = (java.util.Map<Class<?>, Object>) handlersField.get(commandHandlerRegistry);
 
-                builder.withDetail("command.handlers", handlers.size());
+                builder.withDetail("command_handlers", handlers.size());
 
                 if (handlers.isEmpty()) {
-                    builder.withDetail("command.handlers.warning", "No command handlers registered");
+                    builder.withDetail("command_handlers_warning", "No command handlers registered");
                 }
 
             } catch (Exception e) {
                 log.debug("Could not access command handler registry: {}", e.getMessage());
-                builder.withDetail("command.handlers", "UNKNOWN");
+                builder.withDetail("command_handlers", "UNKNOWN");
             }
         } else {
-            builder.withDetail("command.handlers", "NOT_AVAILABLE");
+            builder.withDetail("command_handlers", "NOT_AVAILABLE");
         }
 
         // Query handlers (if DefaultQueryBus)
@@ -131,34 +142,34 @@ public class CqrsHealthIndicator extends FireflyHealthIndicator {
                 @SuppressWarnings("unchecked")
                 java.util.Map<Class<?>, Object> handlers = (java.util.Map<Class<?>, Object>) handlersField.get(queryBus);
 
-                builder.withDetail("query.handlers", handlers.size());
+                builder.withDetail("query_handlers", handlers.size());
 
                 if (handlers.isEmpty()) {
-                    builder.withDetail("query.handlers.warning", "No query handlers registered");
+                    builder.withDetail("query_handlers_warning", "No query handlers registered");
                 }
 
             } catch (Exception e) {
                 log.debug("Could not access query handler registry: {}", e.getMessage());
-                builder.withDetail("query.handlers", "UNKNOWN");
+                builder.withDetail("query_handlers", "UNKNOWN");
             }
         } else {
-            builder.withDetail("query.handlers", "NOT_AVAILABLE");
+            builder.withDetail("query_handlers", "NOT_AVAILABLE");
         }
     }
 
     private void addMetricsDetails(Health.Builder builder) {
         if (meterRegistry == null) {
-            builder.withDetail("metrics.enabled", false);
-            builder.withDetail("metrics.status", "MeterRegistry not available");
+            builder.withDetail("metrics_enabled", false);
+            builder.withDetail("metrics_status", "MeterRegistry not available");
             return;
         }
 
-        builder.withDetail("metrics.enabled", true);
+        builder.withDetail("metrics_enabled", true);
 
         if (commandMetricsService != null) {
-            builder.withDetail("command.metrics.enabled", commandMetricsService.isMetricsEnabled());
+            builder.withDetail("command_metrics_enabled", commandMetricsService.isMetricsEnabled());
         } else {
-            builder.withDetail("command.metrics.enabled", false);
+            builder.withDetail("command_metrics_enabled", false);
         }
     }
 
@@ -183,28 +194,28 @@ public class CqrsHealthIndicator extends FireflyHealthIndicator {
 
             if (totalRequests > 0) {
                 double errorRate = (totalFailed / totalRequests) * 100;
-                builder.withDetail("command.success.rate", String.format("%.2f%%", (totalProcessed / totalRequests) * 100));
-                builder.withDetail("command.error.rate", String.format("%.2f%%", errorRate));
+                builder.withDetail("command_success_rate", String.format("%.2f%%", (totalProcessed / totalRequests) * 100));
+                builder.withDetail("command_error_rate", String.format("%.2f%%", errorRate));
 
                 if (errorRate > ERROR_RATE_THRESHOLD) {
-                    builder.withDetail("command.error.rate.warning",
+                    builder.withDetail("command_error_rate_warning",
                         String.format("High error rate: %.2f%% (threshold: %.1f%%)", errorRate, ERROR_RATE_THRESHOLD));
                 }
             }
 
-            builder.withDetail("total.commands.processed", (long) totalProcessed);
-            builder.withDetail("total.commands.failed", (long) totalFailed);
+            builder.withDetail("total_commands_processed", (long) totalProcessed);
+            builder.withDetail("total_commands_failed", (long) totalFailed);
         }
 
         if (processingTimer != null) {
             double avgProcessingTime = processingTimer.mean(TimeUnit.MILLISECONDS);
             double maxProcessingTime = processingTimer.max(TimeUnit.MILLISECONDS);
 
-            builder.withDetail("avg.command.processing.time.ms", String.format("%.2f", avgProcessingTime));
-            builder.withDetail("max.command.processing.time.ms", String.format("%.2f", maxProcessingTime));
+            builder.withDetail("avg_command_processing_time_ms", String.format("%.2f", avgProcessingTime));
+            builder.withDetail("max_command_processing_time_ms", String.format("%.2f", maxProcessingTime));
 
             if (avgProcessingTime > SLOW_PROCESSING_THRESHOLD) {
-                builder.withDetail("command.processing.warning",
+                builder.withDetail("command_processing_warning",
                     String.format("Slow average processing time: %.2fms (threshold: %.0fms)",
                         avgProcessingTime, SLOW_PROCESSING_THRESHOLD));
             }
@@ -216,18 +227,18 @@ public class CqrsHealthIndicator extends FireflyHealthIndicator {
         Timer processingTimer = meterRegistry.find("firefly.cqrs.query.processing.time").timer();
 
         if (processedCounter != null) {
-            builder.withDetail("total.queries.processed", (long) processedCounter.count());
+            builder.withDetail("total_queries_processed", (long) processedCounter.count());
         }
 
         if (processingTimer != null) {
             double avgProcessingTime = processingTimer.mean(TimeUnit.MILLISECONDS);
             double maxProcessingTime = processingTimer.max(TimeUnit.MILLISECONDS);
 
-            builder.withDetail("avg.query.processing.time.ms", String.format("%.2f", avgProcessingTime));
-            builder.withDetail("max.query.processing.time.ms", String.format("%.2f", maxProcessingTime));
+            builder.withDetail("avg_query_processing_time_ms", String.format("%.2f", avgProcessingTime));
+            builder.withDetail("max_query_processing_time_ms", String.format("%.2f", maxProcessingTime));
 
             if (avgProcessingTime > SLOW_PROCESSING_THRESHOLD) {
-                builder.withDetail("query.processing.warning",
+                builder.withDetail("query_processing_warning",
                     String.format("Slow average processing time: %.2fms (threshold: %.0fms)",
                         avgProcessingTime, SLOW_PROCESSING_THRESHOLD));
             }
