@@ -22,6 +22,9 @@ import org.fireflyframework.cqrs.context.ExecutionContext;
 import org.fireflyframework.cqrs.tracing.CorrelationContext;
 import org.fireflyframework.cqrs.validation.AutoValidationProcessor;
 import org.fireflyframework.cqrs.validation.ValidationException;
+import org.fireflyframework.observability.metrics.FireflyMetricsSupport;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Timer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -40,7 +43,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @Slf4j
 @Component
-public class DefaultQueryBus implements QueryBus {
+public class DefaultQueryBus extends FireflyMetricsSupport implements QueryBus {
 
     private static final Duration DEFAULT_CACHE_TTL = Duration.ofMinutes(15);
 
@@ -50,11 +53,6 @@ public class DefaultQueryBus implements QueryBus {
     private final AutoValidationProcessor autoValidationProcessor;
     private final AuthorizationService authorizationService;
     private final QueryCacheAdapter cacheAdapter;
-    private final io.micrometer.core.instrument.MeterRegistry meterRegistry;
-
-    // Metrics
-    private io.micrometer.core.instrument.Counter processedCounter;
-    private io.micrometer.core.instrument.Timer processingTimer;
 
     @Autowired
     public DefaultQueryBus(ApplicationContext applicationContext,
@@ -62,17 +60,13 @@ public class DefaultQueryBus implements QueryBus {
                           AutoValidationProcessor autoValidationProcessor,
                           AuthorizationService authorizationService,
                           @Autowired(required = false) QueryCacheAdapter cacheAdapter,
-                          @Autowired(required = false) io.micrometer.core.instrument.MeterRegistry meterRegistry) {
+                          @Autowired(required = false) MeterRegistry meterRegistry) {
+        super(meterRegistry, "cqrs");
         this.applicationContext = applicationContext;
         this.correlationContext = correlationContext;
         this.autoValidationProcessor = autoValidationProcessor;
         this.authorizationService = authorizationService;
         this.cacheAdapter = cacheAdapter;
-        this.meterRegistry = meterRegistry;
-
-        if (meterRegistry != null) {
-            initializeMetrics();
-        }
 
         discoverHandlers();
         log.info("DefaultQueryBus initialized with cache adapter: {}",
@@ -95,34 +89,17 @@ public class DefaultQueryBus implements QueryBus {
     }
 
     /**
-     * Initialize metrics for query processing.
-     */
-    private void initializeMetrics() {
-        this.processedCounter = io.micrometer.core.instrument.Counter.builder("firefly.cqrs.query.processed")
-            .description("Total number of queries processed")
-            .register(meterRegistry);
-
-        this.processingTimer = io.micrometer.core.instrument.Timer.builder("firefly.cqrs.query.processing.time")
-            .description("Query processing time")
-            .register(meterRegistry);
-
-        log.debug("Initialized CQRS query metrics");
-    }
-
-    /**
      * Execute query handler with metrics collection.
      */
     private <R> Mono<R> executeWithMetrics(QueryHandler<Query<R>, R> handler, Query<R> query) {
-        if (meterRegistry != null && processingTimer != null) {
-            io.micrometer.core.instrument.Timer.Sample sample = io.micrometer.core.instrument.Timer.start(meterRegistry);
+        if (isEnabled()) {
+            Timer.Sample sample = Timer.start(registry());
             return handler.handle(query)
                     .doOnSuccess(result -> {
-                        sample.stop(processingTimer);
-                        if (processedCounter != null) {
-                            processedCounter.increment();
-                        }
+                        sample.stop(timer("query.processing.time"));
+                        counter("query.processed").increment();
                     })
-                    .doOnError(error -> sample.stop(processingTimer));
+                    .doOnError(error -> sample.stop(timer("query.processing.time")));
         } else {
             return handler.handle(query);
         }
@@ -132,16 +109,14 @@ public class DefaultQueryBus implements QueryBus {
      * Execute query handler with metrics collection and execution context.
      */
     private <R> Mono<R> executeWithMetrics(QueryHandler<Query<R>, R> handler, Query<R> query, ExecutionContext context) {
-        if (meterRegistry != null && processingTimer != null) {
-            io.micrometer.core.instrument.Timer.Sample sample = io.micrometer.core.instrument.Timer.start(meterRegistry);
+        if (isEnabled()) {
+            Timer.Sample sample = Timer.start(registry());
             return handler.handle(query, context)
                     .doOnSuccess(result -> {
-                        sample.stop(processingTimer);
-                        if (processedCounter != null) {
-                            processedCounter.increment();
-                        }
+                        sample.stop(timer("query.processing.time"));
+                        counter("query.processed").increment();
                     })
-                    .doOnError(error -> sample.stop(processingTimer));
+                    .doOnError(error -> sample.stop(timer("query.processing.time")));
         } else {
             return handler.handle(query, context);
         }
