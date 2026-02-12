@@ -16,10 +16,9 @@
 
 package org.fireflyframework.cqrs.authorization;
 
-import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.Timer;
 import lombok.extern.slf4j.Slf4j;
+import org.fireflyframework.observability.metrics.FireflyMetricsSupport;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.stereotype.Component;
 
@@ -46,83 +45,28 @@ import java.util.concurrent.atomic.AtomicLong;
 @Slf4j
 @Component
 @ConditionalOnClass(MeterRegistry.class)
-public class AuthorizationMetrics {
+public class AuthorizationMetrics extends FireflyMetricsSupport {
 
-    private final MeterRegistry meterRegistry;
-
-    // Counters
-    private final Counter authorizationAttempts;
-    private final Counter authorizationSuccesses;
-    private final Counter authorizationFailures;
-    private final Counter customAuthSuccesses;
-    private final Counter customAuthFailures;
-    private final Counter cacheHits;
-    private final Counter cacheMisses;
-
-    // Timers
-    private final Timer authorizationTimer;
-    private final Timer customAuthTimer;
-
-    // Gauges
     private final AtomicLong activeAuthorizationRequests = new AtomicLong(0);
     private final AtomicLong cacheSize = new AtomicLong(0);
 
     public AuthorizationMetrics(MeterRegistry meterRegistry) {
-        this.meterRegistry = meterRegistry;
+        super(meterRegistry, "cqrs");
 
-        // Initialize counters
-        this.authorizationAttempts = Counter.builder("firefly.authorization.attempts")
-            .description("Total number of authorization attempts")
-            .register(meterRegistry);
-
-        this.authorizationSuccesses = Counter.builder("firefly.authorization.successes")
-            .description("Number of successful authorizations")
-            .register(meterRegistry);
-
-        this.authorizationFailures = Counter.builder("firefly.authorization.failures")
-            .description("Number of failed authorizations")
-            .register(meterRegistry);
-
-        this.customAuthSuccesses = Counter.builder("firefly.authorization.custom.successes")
-            .description("Number of successful custom authorizations")
-            .register(meterRegistry);
-
-        this.customAuthFailures = Counter.builder("firefly.authorization.custom.failures")
-            .description("Number of failed custom authorizations")
-            .register(meterRegistry);
-
-        this.cacheHits = Counter.builder("firefly.authorization.cache.hits")
-            .description("Number of authorization cache hits")
-            .register(meterRegistry);
-
-        this.cacheMisses = Counter.builder("firefly.authorization.cache.misses")
-            .description("Number of authorization cache misses")
-            .register(meterRegistry);
-
-        // Initialize timers
-        this.authorizationTimer = Timer.builder("firefly.authorization.duration")
-            .description("Time taken for authorization operations")
-            .register(meterRegistry);
-
-        this.customAuthTimer = Timer.builder("firefly.authorization.custom.duration")
-            .description("Time taken for custom authorization operations")
-            .register(meterRegistry);
-
-        // Initialize gauges
-        meterRegistry.gauge("firefly.authorization.active_requests", activeAuthorizationRequests);
-        meterRegistry.gauge("firefly.authorization.cache.size", cacheSize);
+        gauge("authorization.active.requests", activeAuthorizationRequests, AtomicLong::get);
+        gauge("authorization.cache.size", cacheSize, AtomicLong::get);
     }
 
     /**
      * Records an authorization attempt.
-     * 
+     *
      * @param commandType the type of command being authorized
      * @param userId the user ID making the request
      */
     public void recordAuthorizationAttempt(String commandType, String userId) {
-        authorizationAttempts.increment();
+        counter("authorization.attempts").increment();
         activeAuthorizationRequests.incrementAndGet();
-        
+
         log.debug("Authorization attempt recorded - Command: {}, User: {}", commandType, userId);
     }
 
@@ -134,13 +78,12 @@ public class AuthorizationMetrics {
      * @param authType the type of authorization (custom)
      */
     public void recordAuthorizationSuccess(String commandType, Duration duration, String authType) {
-        authorizationSuccesses.increment();
-        authorizationTimer.record(duration);
+        counter("authorization.successes").increment();
+        timer("authorization.duration").record(duration);
         activeAuthorizationRequests.decrementAndGet();
 
-        // Record custom auth metrics
-        customAuthSuccesses.increment();
-        customAuthTimer.record(duration);
+        counter("authorization.custom.successes").increment();
+        timer("authorization.custom.duration").record(duration);
 
         log.debug("Authorization success recorded - Command: {}, Duration: {}ms, Type: {}",
             commandType, duration.toMillis(), authType);
@@ -155,21 +98,18 @@ public class AuthorizationMetrics {
      * @param reason the reason for failure
      */
     public void recordAuthorizationFailure(String commandType, Duration duration, String authType, String reason) {
-        authorizationFailures.increment();
-        authorizationTimer.record(duration);
+        counter("authorization.failures").increment();
+        timer("authorization.duration").record(duration);
         activeAuthorizationRequests.decrementAndGet();
 
-        // Record custom auth metrics
-        customAuthFailures.increment();
-        customAuthTimer.record(duration);
+        counter("authorization.custom.failures").increment();
+        timer("authorization.custom.duration").record(duration);
 
-        // Record failure reason as a tag
-        Counter.builder("firefly.authorization.failures.by_reason")
-            .tag("reason", sanitizeReason(reason))
-            .tag("command_type", commandType)
-            .tag("auth_type", authType)
-            .register(meterRegistry)
-            .increment();
+        counter("authorization.failures.by.reason",
+                "reason", sanitizeReason(reason),
+                "command.type", commandType,
+                "auth.type", authType)
+                .increment();
 
         log.debug("Authorization failure recorded - Command: {}, Duration: {}ms, Type: {}, Reason: {}",
             commandType, duration.toMillis(), authType, reason);
@@ -177,41 +117,33 @@ public class AuthorizationMetrics {
 
     /**
      * Records a cache hit for authorization results.
-     * 
+     *
      * @param commandType the type of command
      * @param cacheKey the cache key that was hit
      */
     public void recordCacheHit(String commandType, String cacheKey) {
-        cacheHits.increment();
-        
-        Counter.builder("firefly.authorization.cache.hits.by_command")
-            .tag("command_type", commandType)
-            .register(meterRegistry)
-            .increment();
-        
+        counter("authorization.cache.hits").increment();
+        counter("authorization.cache.hits.by.command", "command.type", commandType).increment();
+
         log.debug("Authorization cache hit - Command: {}, Key: {}", commandType, cacheKey);
     }
 
     /**
      * Records a cache miss for authorization results.
-     * 
+     *
      * @param commandType the type of command
      * @param cacheKey the cache key that was missed
      */
     public void recordCacheMiss(String commandType, String cacheKey) {
-        cacheMisses.increment();
-        
-        Counter.builder("firefly.authorization.cache.misses.by_command")
-            .tag("command_type", commandType)
-            .register(meterRegistry)
-            .increment();
-        
+        counter("authorization.cache.misses").increment();
+        counter("authorization.cache.misses.by.command", "command.type", commandType).increment();
+
         log.debug("Authorization cache miss - Command: {}, Key: {}", commandType, cacheKey);
     }
 
     /**
      * Updates the current cache size.
-     * 
+     *
      * @param size the current number of entries in the authorization cache
      */
     public void updateCacheSize(long size) {
@@ -224,38 +156,39 @@ public class AuthorizationMetrics {
      * @param duration the time taken for custom authorization operation
      */
     public void recordCustomAuthTiming(Duration duration) {
-        customAuthTimer.record(duration);
+        timer("authorization.custom.duration").record(duration);
     }
 
     /**
      * Gets the current authorization success rate.
-     * 
+     *
      * @return success rate as a percentage (0.0 to 100.0)
      */
     public double getSuccessRate() {
-        double total = authorizationAttempts.count();
+        double total = counter("authorization.attempts").count();
         if (total == 0) {
             return 100.0;
         }
-        return (authorizationSuccesses.count() / total) * 100.0;
+        return (counter("authorization.successes").count() / total) * 100.0;
     }
 
     /**
      * Gets the current cache hit rate.
-     * 
+     *
      * @return cache hit rate as a percentage (0.0 to 100.0)
      */
     public double getCacheHitRate() {
-        double totalCacheRequests = cacheHits.count() + cacheMisses.count();
+        double totalCacheRequests = counter("authorization.cache.hits").count()
+                + counter("authorization.cache.misses").count();
         if (totalCacheRequests == 0) {
             return 0.0;
         }
-        return (cacheHits.count() / totalCacheRequests) * 100.0;
+        return (counter("authorization.cache.hits").count() / totalCacheRequests) * 100.0;
     }
 
     /**
      * Sanitizes failure reasons for use as metric tags.
-     * 
+     *
      * @param reason the raw failure reason
      * @return sanitized reason suitable for metric tags
      */
@@ -263,8 +196,7 @@ public class AuthorizationMetrics {
         if (reason == null || reason.trim().isEmpty()) {
             return "unknown";
         }
-        
-        // Convert to lowercase and replace spaces/special chars with underscores
+
         return reason.toLowerCase()
             .replaceAll("[^a-z0-9_]", "_")
             .replaceAll("_{2,}", "_")
