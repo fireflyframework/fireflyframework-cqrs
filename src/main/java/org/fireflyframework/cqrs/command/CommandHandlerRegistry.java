@@ -17,6 +17,7 @@
 package org.fireflyframework.cqrs.command;
 
 import lombok.extern.slf4j.Slf4j;
+import org.fireflyframework.kernel.exception.FireflyException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
@@ -311,7 +312,7 @@ public class CommandHandlerRegistry {
     /**
      * Exception thrown when handler registration fails.
      */
-    public static class CommandHandlerRegistrationException extends RuntimeException {
+    public static class CommandHandlerRegistrationException extends FireflyException {
         public CommandHandlerRegistrationException(String message) {
             super(message);
         }

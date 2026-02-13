@@ -19,6 +19,13 @@
     <description>A powerful Spring Boot library that provides CQRS (Command Query Responsibility Segregation) pattern implementation with reactive programming support, featuring command and query buses, execution contexts, and comprehensive metrics.</description>
 
     <dependencies>
+        <!-- Firefly Kernel (exception hierarchy, shared abstractions) -->
+        <dependency>
+            <groupId>org.fireflyframework</groupId>
+            <artifactId>fireflyframework-kernel</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
         <!-- Spring Boot WebFlux -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -69,6 +76,14 @@
             <groupId>org.fireflyframework</groupId>
             <artifactId>fireflyframework-observability</artifactId>
             <version>${project.version}</version>
+        </dependency>
+
+        <!-- Firefly EDA (optional - enables CQRS/EDA bridge for @PublishDomainEvent and @InvalidateCacheOn) -->
+        <dependency>
+            <groupId>org.fireflyframework</groupId>
+            <artifactId>fireflyframework-eda</artifactId>
+            <version>${project.version}</version>
+            <optional>true</optional>
         </dependency>
 
         <!-- Lombok for reducing boilerplate code -->

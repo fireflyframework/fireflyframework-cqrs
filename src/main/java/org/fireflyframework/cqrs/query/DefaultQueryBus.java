@@ -22,6 +22,7 @@ import org.fireflyframework.cqrs.context.ExecutionContext;
 import org.fireflyframework.cqrs.tracing.CorrelationContext;
 import org.fireflyframework.cqrs.validation.AutoValidationProcessor;
 import org.fireflyframework.cqrs.validation.ValidationException;
+import org.fireflyframework.kernel.exception.FireflyException;
 import org.fireflyframework.observability.metrics.FireflyMetricsSupport;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
@@ -409,7 +410,7 @@ public class DefaultQueryBus extends FireflyMetricsSupport implements QueryBus {
     /**
      * Exception thrown when no handler is found for a query.
      */
-    public static class QueryHandlerNotFoundException extends RuntimeException {
+    public static class QueryHandlerNotFoundException extends FireflyException {
         public QueryHandlerNotFoundException(String message) {
             super(message);
         }
@@ -418,7 +419,7 @@ public class DefaultQueryBus extends FireflyMetricsSupport implements QueryBus {
     /**
      * Exception thrown when query processing fails.
      */
-    public static class QueryProcessingException extends RuntimeException {
+    public static class QueryProcessingException extends FireflyException {
         public QueryProcessingException(String message, Throwable cause) {
             super(message, cause);
         }

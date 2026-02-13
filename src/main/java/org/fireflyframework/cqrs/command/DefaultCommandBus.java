@@ -18,6 +18,8 @@ package org.fireflyframework.cqrs.command;
 
 import org.fireflyframework.cqrs.authorization.AuthorizationService;
 import org.fireflyframework.cqrs.context.ExecutionContext;
+import org.fireflyframework.cqrs.event.CommandEventPublisher;
+import org.fireflyframework.cqrs.event.annotation.PublishDomainEvent;
 import org.fireflyframework.cqrs.tracing.CorrelationContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,6 +68,9 @@ public class DefaultCommandBus implements CommandBus {
     private final AuthorizationService authorizationService;
     private final CommandMetricsService metricsService;
     private final CorrelationContext correlationContext;
+
+    @Autowired(required = false)
+    private CommandEventPublisher commandEventPublisher;
 
     /**
      * Constructs a DefaultCommandBus with the required services.
@@ -172,7 +177,9 @@ public class DefaultCommandBus implements CommandBus {
                                     ));
                                 }
                             }))
-                            // Step 6: Record metrics and handle completion
+                            // Step 6: Publish domain event if @PublishDomainEvent is present
+                            .flatMap(result -> publishDomainEvent(handler, command, result))
+                            // Step 7: Record metrics and handle completion
                             .doOnSuccess(result -> {
                                 Duration processingTime = Duration.between(startTime, Instant.now());
                                 log.info("CQRS Command Processing Completed - Type: {}, ID: {}, Duration: {}ms",
@@ -253,7 +260,9 @@ public class DefaultCommandBus implements CommandBus {
                                     ));
                                 }
                             }))
-                            // Step 6: Record metrics and handle completion
+                            // Step 6: Publish domain event if @PublishDomainEvent is present
+                            .flatMap(result -> publishDomainEvent(handler, command, result))
+                            // Step 7: Record metrics and handle completion
                             .doOnSuccess(result -> {
                                 Duration processingTime = Duration.between(startTime, Instant.now());
                                 log.info("CQRS Command Processing Completed with Context - Type: {}, ID: {}, Duration: {}ms",
@@ -324,5 +333,26 @@ public class DefaultCommandBus implements CommandBus {
         return handlerRegistry.hasHandler(commandType);
     }
 
+    /**
+     * Publishes a domain event if the handler is annotated with @PublishDomainEvent.
+     * Publishing failures are logged but do not fail the command.
+     */
+    private <R> Mono<R> publishDomainEvent(CommandHandler<?, ?> handler, Command<R> command, R result) {
+        if (commandEventPublisher == null || result == null) {
+            return Mono.just(result);
+        }
 
+        PublishDomainEvent annotation = handler.getClass().getAnnotation(PublishDomainEvent.class);
+        if (annotation == null) {
+            return Mono.just(result);
+        }
+
+        return commandEventPublisher.publish(command, result, annotation)
+                .thenReturn(result)
+                .onErrorResume(e -> {
+                    log.warn("Failed to publish domain event for command {} (destination={}): {}",
+                            command.getClass().getSimpleName(), annotation.destination(), e.getMessage());
+                    return Mono.just(result);
+                });
+    }
 }

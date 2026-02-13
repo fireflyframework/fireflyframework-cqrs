@@ -15,17 +15,19 @@
  */
 package org.fireflyframework.cqrs.validation;
 
+import org.fireflyframework.kernel.exception.FireflyException;
+
 import java.util.List;
 import java.util.Objects;
 
 /**
  * Exception thrown when command validation fails.
  * Contains detailed validation results and error information.
- * 
+ *
  * @author Firefly Software Solutions Inc
  * @since 1.0.0
  */
-public class ValidationException extends RuntimeException {
+public class ValidationException extends FireflyException {
     
     private final ValidationResult validationResult;
     

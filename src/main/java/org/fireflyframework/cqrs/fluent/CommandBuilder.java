@@ -19,6 +19,7 @@ package org.fireflyframework.cqrs.fluent;
 import org.fireflyframework.cqrs.command.Command;
 import org.fireflyframework.cqrs.command.CommandBus;
 import org.fireflyframework.cqrs.validation.ValidationResult;
+import org.fireflyframework.kernel.exception.FireflyException;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 
@@ -750,7 +751,7 @@ public class CommandBuilder<C extends Command<R>, R> {
     /**
      * Exception thrown when command building fails.
      */
-    public static class CommandBuilderException extends RuntimeException {
+    public static class CommandBuilderException extends FireflyException {
         public CommandBuilderException(String message) {
             super(message);
         }

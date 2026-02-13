@@ -18,6 +18,7 @@ package org.fireflyframework.cqrs.fluent;
 
 import org.fireflyframework.cqrs.query.Query;
 import org.fireflyframework.cqrs.query.QueryBus;
+import org.fireflyframework.kernel.exception.FireflyException;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 
@@ -604,7 +605,7 @@ public class QueryBuilder<Q extends Query<R>, R> {
     /**
      * Exception thrown when query building fails.
      */
-    public static class QueryBuilderException extends RuntimeException {
+    public static class QueryBuilderException extends FireflyException {
         public QueryBuilderException(String message) {
             super(message);
         }
