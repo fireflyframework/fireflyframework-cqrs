@@ -57,7 +57,7 @@ import java.util.Map;
  * @see CommandHandler
  * @see Command
  */
-public class CommandProcessingException extends RuntimeException {
+public class CommandProcessingException extends org.fireflyframework.kernel.exception.FireflyException {
 
     private final String commandType;
     private final String commandId;

@@ -16,6 +16,8 @@
 
 package org.fireflyframework.cqrs.command;
 
+import org.fireflyframework.kernel.exception.FireflyException;
+
 import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
@@ -53,7 +55,7 @@ import java.util.Map;
  * @see CommandHandler
  * @see CommandHandlerRegistry
  */
-public class CommandHandlerNotFoundException extends RuntimeException {
+public class CommandHandlerNotFoundException extends FireflyException {
 
     private final String commandType;
     private final String commandId;

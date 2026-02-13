@@ -15,13 +15,15 @@
  */
 package org.fireflyframework.cqrs.authorization;
 
+import org.fireflyframework.kernel.exception.FireflySecurityException;
+
 import java.util.List;
 import java.util.Objects;
 
 /**
  * Exception thrown when command or query authorization fails.
  * Contains detailed authorization results and error information.
- * 
+ *
  * <p>This exception is typically thrown when:
  * <ul>
  *   <li>A user attempts to access a resource they don't own</li>
@@ -29,12 +31,12 @@ import java.util.Objects;
  *   <li>Resource ownership validation fails</li>
  *   <li>Complex authorization rules are violated</li>
  * </ul>
- * 
+ *
  * <p><strong>Usage Examples:</strong>
  * <pre>{@code
  * // Simple authorization failure
  * throw new AuthorizationException("account", "Account does not belong to user");
- * 
+ *
  * // Complex authorization failure with multiple errors
  * AuthorizationResult result = AuthorizationResult.builder()
  *     .addError("account.ownership", "Account ACC-123 does not belong to user USER-456", "OWNERSHIP_VIOLATION")
@@ -42,11 +44,11 @@ import java.util.Objects;
  *     .build();
  * throw new AuthorizationException(result);
  * }</pre>
- * 
+ *
  * @author Firefly Software Solutions Inc
  * @since 1.0.0
  */
-public class AuthorizationException extends RuntimeException {
+public class AuthorizationException extends FireflySecurityException {
     
     private final AuthorizationResult authorizationResult;
     

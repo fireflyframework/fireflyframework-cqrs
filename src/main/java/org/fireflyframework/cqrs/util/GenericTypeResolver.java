@@ -17,6 +17,7 @@
 package org.fireflyframework.cqrs.util;
 
 import lombok.extern.slf4j.Slf4j;
+import org.fireflyframework.kernel.exception.FireflyException;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -328,7 +329,7 @@ public final class GenericTypeResolver {
     /**
      * Exception thrown when generic type resolution fails with detailed troubleshooting information.
      */
-    public static class TypeResolutionException extends RuntimeException {
+    public static class TypeResolutionException extends FireflyException {
         private final Class<?> implementationClass;
         private final Class<?> targetClass;
         private final int typeParameterIndex;
