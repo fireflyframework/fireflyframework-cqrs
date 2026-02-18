@@ -80,10 +80,20 @@ public interface Command<R> {
      * Returns a unique identifier for this command instance.
      *
      * <p>This identifier is used for tracking, logging, and correlation purposes.
-     * The default implementation generates a random UUID, but implementations
-     * can override this to provide custom ID generation strategies.
      *
-     * @return the unique command identifier, never null
+     * <p><strong>Warning:</strong> The default implementation generates a <em>new</em> random UUID
+     * on every invocation. If you need a stable ID (e.g., for idempotency, logging, or retry logic),
+     * store the value in a field:
+     * <pre>{@code
+     * private final String commandId = UUID.randomUUID().toString();
+     *
+     * @Override
+     * public String getCommandId() {
+     *     return commandId;
+     * }
+     * }</pre>
+     *
+     * @return a unique command identifier, never null
      * @since 1.0.0
      */
     @JsonIgnore
@@ -95,8 +105,17 @@ public interface Command<R> {
      * Returns the timestamp when this command was created.
      *
      * <p>This timestamp is used for auditing, ordering, and timeout calculations.
-     * The default implementation returns the current system time, but implementations
-     * can override this to provide custom timestamp strategies.
+     *
+     * <p><strong>Warning:</strong> The default implementation returns {@link Instant#now()} on every
+     * invocation. If you need a stable timestamp, store the value in a field:
+     * <pre>{@code
+     * private final Instant timestamp = Instant.now();
+     *
+     * @Override
+     * public Instant getTimestamp() {
+     *     return timestamp;
+     * }
+     * }</pre>
      *
      * @return the command creation timestamp, never null
      * @since 1.0.0

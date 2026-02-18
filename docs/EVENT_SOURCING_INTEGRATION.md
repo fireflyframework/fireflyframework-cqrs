@@ -2073,8 +2073,8 @@ public class TransactionProjectionHandler {
 ## 📚 Additional Resources
 
 - **[CQRS Framework Documentation](../README.md)** - Complete CQRS library reference
-- **[Event Sourcing Library Documentation](../../fireflyframework-eda/docs/)** - Event Sourcing implementation details  
-- **[Domain Events Integration](../../fireflyframework-domain/docs/)** - Multi-messaging event publishing
+- **[Event Sourcing Library Documentation](../../fireflyframework-eda/docs/)** - Event Sourcing implementation details
+- **[Domain Events Integration](../../fireflyframework-starter-domain/docs/)** - Multi-messaging event publishing
 - **[Cache Configuration Guide](../../fireflyframework-cache/docs/)** - Advanced caching strategies
 
 ---

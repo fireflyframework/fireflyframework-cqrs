@@ -182,7 +182,7 @@ public class TransferController {
 
 This library works seamlessly with other Firefly components:
 
-- **[fireflyframework-domain](../../fireflyframework-domain)** - Domain events, service clients, resilience
+- **[fireflyframework-starter-domain](../../fireflyframework-starter-domain)** - Domain events, service clients, resilience
 - **[lib-transactional-engine](../../lib-transactional-engine)** - Saga orchestration
 
 ---

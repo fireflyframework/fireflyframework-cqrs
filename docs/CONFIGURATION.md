@@ -421,10 +421,10 @@ Health check includes:
 
 ## 🔗 Integration Configuration
 
-### With fireflyframework-domain
+### With fireflyframework-starter-domain
 
 ```yaml
-# fireflyframework-domain configuration (for domain events, service clients)
+# fireflyframework-starter-domain configuration (for domain events, service clients)
 firefly:
   domain:
     events:
@@ -432,7 +432,7 @@ firefly:
       adapter: KAFKA
     service-clients:
       enabled: true
-  
+
   # CQRS configuration (for commands, queries, ExecutionContext)
   cqrs:
     enabled: true

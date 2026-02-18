@@ -18,6 +18,7 @@ package org.fireflyframework.cqrs.config;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.stereotype.Component;
 
 /**
@@ -52,6 +53,7 @@ import org.springframework.stereotype.Component;
  */
 @Data
 @Component
+@Validated
 @ConfigurationProperties(prefix = "firefly.cqrs.authorization")
 public class AuthorizationProperties {
 

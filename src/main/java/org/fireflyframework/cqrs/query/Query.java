@@ -34,7 +34,20 @@ public interface Query<R> {
 
     /**
      * Unique identifier for this query instance.
-     * @return the query ID
+     *
+     * <p><strong>Warning:</strong> The default implementation generates a <em>new</em> random UUID
+     * on every invocation. If you need a stable ID (e.g., for logging or tracing),
+     * store the value in a field:
+     * <pre>{@code
+     * private final String queryId = UUID.randomUUID().toString();
+     *
+     * @Override
+     * public String getQueryId() {
+     *     return queryId;
+     * }
+     * }</pre>
+     *
+     * @return a unique query identifier, never null
      */
     default String getQueryId() {
         return UUID.randomUUID().toString();
@@ -42,7 +55,11 @@ public interface Query<R> {
 
     /**
      * Timestamp when the query was created.
-     * @return the creation timestamp
+     *
+     * <p><strong>Warning:</strong> The default implementation returns {@link Instant#now()} on every
+     * invocation. If you need a stable timestamp, store the value in a field.
+     *
+     * @return the creation timestamp, never null
      */
     default Instant getTimestamp() {
         return Instant.now();
