@@ -56,7 +56,7 @@ The execution context propagates correlation IDs, tenant information, and securi
 <dependency>
     <groupId>org.fireflyframework</groupId>
     <artifactId>fireflyframework-cqrs</artifactId>
-    <version>26.02.04</version>
+    <version>26.02.05</version>
 </dependency>
 ```
 
