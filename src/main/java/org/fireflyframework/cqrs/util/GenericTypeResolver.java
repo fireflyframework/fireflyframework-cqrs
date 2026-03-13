@@ -170,6 +170,11 @@ public final class GenericTypeResolver {
                 Type typeArg = typeArguments[typeParameterIndex];
                 if (typeArg instanceof Class) {
                     return (Class<T>) typeArg;
+                } else if (typeArg instanceof ParameterizedType) {
+                    Type rawTypeArg = ((ParameterizedType) typeArg).getRawType();
+                    if (rawTypeArg instanceof Class) {
+                        return (Class<T>) rawTypeArg;
+                    }
                 }
             }
         }
