@@ -187,4 +187,4 @@ This library works seamlessly with other Firefly components:
 
 ---
 
-*Built with ❤️ by Firefly Software Solutions Inc.*
+*Built with ❤️ by Firefly Software Foundation.*

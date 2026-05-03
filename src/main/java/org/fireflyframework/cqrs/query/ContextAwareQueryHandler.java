@@ -1,5 +1,5 @@
 /*
- * Copyright 2024-2026 Firefly Software Solutions Inc
+ * Copyright 2024-2026 Firefly Software Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,7 +68,7 @@ import reactor.core.publisher.Mono;
  * 
  * @param <Q> the query type this handler processes
  * @param <R> the result type returned by this handler
- * @author Firefly Software Solutions Inc
+ * @author Firefly Software Foundation
  * @since 1.0.0
  */
 public abstract class ContextAwareQueryHandler<Q extends Query<R>, R> extends QueryHandler<Q, R> {
