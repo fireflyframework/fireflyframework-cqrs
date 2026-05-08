@@ -115,47 +115,58 @@ public class CqrsMetricsEndpoint {
     }
 
     /**
-     * Returns detailed command processing metrics.
+     * Returns the metrics section identified by the path variable.
+     *
+     * <p>Supported sections: {@code commands}, {@code queries}, {@code handlers},
+     * {@code health}. Any other value yields an empty map.
+     *
+     * <p>Spring Boot Actuator only allows a single {@code @ReadOperation} per
+     * predicate (verb + path + media type). All four section dispatchers must
+     * therefore live in a single method; the path-variable value is the
+     * discriminator instead of the method name.
      */
     @ReadOperation
-    public Map<String, Object> commands(@Selector String section) {
-        if ("commands".equals(section)) {
-            return getCommandMetrics();
+    public Map<String, Object> bySection(@Selector String section) {
+        if (section == null) {
+            return Collections.emptyMap();
         }
-        return Collections.emptyMap();
+        return switch (section) {
+            case "commands" -> getCommandMetrics();
+            case "queries" -> getQueryMetrics();
+            case "handlers" -> getHandlerInfo();
+            case "health" -> getHealthStatus();
+            default -> Collections.emptyMap();
+        };
     }
 
     /**
-     * Returns detailed query processing metrics.
+     * Returns detailed command processing metrics. Plain method (no
+     * {@code @ReadOperation}) so tests can call it directly without going
+     * through the Actuator infrastructure.
      */
-    @ReadOperation
-    public Map<String, Object> queries(@Selector String section) {
-        if ("queries".equals(section)) {
-            return getQueryMetrics();
-        }
-        return Collections.emptyMap();
+    public Map<String, Object> commands(String section) {
+        return "commands".equals(section) ? getCommandMetrics() : Collections.emptyMap();
     }
 
     /**
-     * Returns handler registry information.
+     * Returns detailed query processing metrics. See {@link #commands(String)}.
      */
-    @ReadOperation
-    public Map<String, Object> handlers(@Selector String section) {
-        if ("handlers".equals(section)) {
-            return getHandlerInfo();
-        }
-        return Collections.emptyMap();
+    public Map<String, Object> queries(String section) {
+        return "queries".equals(section) ? getQueryMetrics() : Collections.emptyMap();
     }
 
     /**
-     * Returns CQRS framework health status.
+     * Returns handler registry information. See {@link #commands(String)}.
      */
-    @ReadOperation
-    public Map<String, Object> health(@Selector String section) {
-        if ("health".equals(section)) {
-            return getHealthStatus();
-        }
-        return Collections.emptyMap();
+    public Map<String, Object> handlers(String section) {
+        return "handlers".equals(section) ? getHandlerInfo() : Collections.emptyMap();
+    }
+
+    /**
+     * Returns CQRS framework health status. See {@link #commands(String)}.
+     */
+    public Map<String, Object> health(String section) {
+        return "health".equals(section) ? getHealthStatus() : Collections.emptyMap();
     }
 
     private Map<String, Object> getFrameworkInfo() {
