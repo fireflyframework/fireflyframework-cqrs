@@ -1,5 +1,5 @@
 /*
- * Copyright 2024-2026 Firefly Software Solutions Inc
+ * Copyright 2024-2026 Firefly Software Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@ import java.util.Map;
  * <p>This class is only instantiated when {@code fireflyframework-eda} is on the classpath,
  * via {@link org.fireflyframework.cqrs.config.CqrsEdaAutoConfiguration}.
  *
- * @author Firefly Software Solutions Inc
+ * @author Firefly Software Foundation
  * @since 1.0.0
  */
 @Slf4j

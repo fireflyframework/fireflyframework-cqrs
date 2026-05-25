@@ -1,5 +1,5 @@
 /*
- * Copyright 2024-2026 Firefly Software Solutions Inc
+ * Copyright 2024-2026 Firefly Software Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -78,7 +78,7 @@ import java.util.Set;
  * and {@link org.fireflyframework.cqrs.query.QueryBus} to validate commands and queries before
  * they are processed by their respective handlers.
  *
- * @author Firefly Software Solutions Inc
+ * @author Firefly Software Foundation
  * @since 1.0.0
  * @see jakarta.validation.Validator
  * @see org.fireflyframework.cqrs.validation.ValidationResult
